@@ -11,14 +11,16 @@ class Converter:
         self.vid = cv2.VideoCapture(filename)
         frame = self.vid.read()[1]
         self.aspect = self.MIN_ASPECT_CHARS / min(frame.shape[:2])
+        self.h = round(frame.shape[0] * self.aspect)
+        self.w = round(frame.shape[1] * self.aspect)
         self.ms_per_frame = 1 / self.vid.get(cv2.CAP_PROP_FPS)
 
     def getCharacter(self, pixel):
         intensity = pixel / 255
         return self.CHARACTERS[round(intensity * len(self.CHARACTERS)) - 1]
 
-    def printToTerminal(self):
-        ascii_frames = self.asciiGenerator()
+    def printVidToTerminal(self):
+        ascii_frames = self.asciiVidGenerator()
         gotime = time.time()
         for frame in ascii_frames:
             while True:
@@ -31,25 +33,26 @@ class Converter:
                         sys.stdout.write("\x1b[2K")  # delete the last line
                     break
 
-    def asciiGenerator(self):
+    def imgToAscii(self, img):
+        img = cv2.resize(img, (0, 0), fx=self.aspect, fy=self.aspect)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        cols = []
+        for y in range(self.h):
+            row = ""
+            for x in range(self.w):
+                row += self.getCharacter(img[y, x]) * 2
+            cols.append(row)
+        return cols
+
+    def asciiVidGenerator(self):
         while self.vid.isOpened():
             ret, frame = self.vid.read()
             if ret == True:
-                frame = cv2.resize(frame, (0, 0), fx=self.aspect, fy=self.aspect)
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                h = frame.shape[0]
-                w = frame.shape[1]
-                cols = []
-                for y in range(h):
-                    row = ""
-                    for x in range(w):
-                        row += self.getCharacter(frame[y, x]) * 2
-                    cols.append(row)
-                yield cols
+                yield self.imgToAscii(frame)
             else:
                 break
 
 
 if __name__ == "__main__":
     c = Converter("vid.mp4")
-    c.printToTerminal()
+    c.printVidToTerminal()
