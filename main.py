@@ -19,35 +19,37 @@ class Converter:
         return self.CHARACTERS[round(intensity * len(self.CHARACTERS)) - 1]
 
     def printToTerminal(self):
-        for row in self.ascii_image:
-            print(row)
-        for _ in range(len(self.ascii_image)):
-            sys.stdout.write("\x1b[1A")  # cursor up one line
-            sys.stdout.write("\x1b[2K")  # delete the last line
-
-    def convertToASCII(self):
+        ascii_frames = self.asciiGenerator()
         gotime = time.time()
-        while self.vid.isOpened():
-            if time.time() >= gotime:
-                gotime += self.ms_per_frame
-                ret, frame = self.vid.read()
-                if ret == True:
-                    frame = cv2.resize(frame, (0, 0), fx=self.aspect, fy=self.aspect)
-                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                    h = frame.shape[0]
-                    w = frame.shape[1]
-                    cols = []
-                    for y in range(h):
-                        row = ""
-                        for x in range(w):
-                            row += self.getCharacter(frame[y, x]) * 2
-                        cols.append(row)
-                    self.ascii_image = cols
-                    self.printToTerminal()
-                else:
+        for frame in ascii_frames:
+            while True:
+                if time.time() >= gotime:
+                    gotime += self.ms_per_frame
+                    for row in frame:
+                        print(row)
+                    for _ in range(len(frame)):
+                        sys.stdout.write("\x1b[1A")  # cursor up one line
+                        sys.stdout.write("\x1b[2K")  # delete the last line
                     break
-        self.vid.release()
+
+    def asciiGenerator(self):
+        while self.vid.isOpened():
+            ret, frame = self.vid.read()
+            if ret == True:
+                frame = cv2.resize(frame, (0, 0), fx=self.aspect, fy=self.aspect)
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                h = frame.shape[0]
+                w = frame.shape[1]
+                cols = []
+                for y in range(h):
+                    row = ""
+                    for x in range(w):
+                        row += self.getCharacter(frame[y, x]) * 2
+                    cols.append(row)
+                yield cols
+            else:
+                break
 
 
 c = Converter("vid.mp4")
-c.convertToASCII()
+c.printToTerminal()
