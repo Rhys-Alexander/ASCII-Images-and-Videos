@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import time
+import sys
 
 
 class Converter:
@@ -17,7 +18,14 @@ class Converter:
         intensity = pixel / 255
         return self.CHARACTERS[round(intensity * len(self.CHARACTERS)) - 1]
 
-    def convertToTerminal(self):
+    def printToTerminal(self):
+        for row in self.ascii_image:
+            print(row)
+        for _ in range(len(self.ascii_image)):
+            sys.stdout.write("\x1b[1A")  # cursor up one line
+            sys.stdout.write("\x1b[2K")  # delete the last line
+
+    def convertToASCII(self):
         gotime = time.time()
         while self.vid.isOpened():
             if time.time() >= gotime:
@@ -34,11 +42,12 @@ class Converter:
                         for x in range(w):
                             row += self.getCharacter(frame[y, x]) * 2
                         cols.append(row)
-                    print(np.matrix(cols))
+                    self.ascii_image = cols
+                    self.printToTerminal()
                 else:
                     break
         self.vid.release()
 
 
 c = Converter("vid.mp4")
-c.convertToTerminal()
+c.convertToASCII()
