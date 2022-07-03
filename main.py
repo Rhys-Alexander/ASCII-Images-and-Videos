@@ -13,6 +13,7 @@ class Converter:
         if not type:
             print("Error: Not a valid filetype")
             return
+
         self.isVid = True if type == "video" else False
 
         if self.isVid:
@@ -66,22 +67,22 @@ class Converter:
             ms_per_frame = 1 / self.file.get(cv2.CAP_PROP_FPS)
             ascii_frames = self.asciiVidGenerator()
             gotime = time.time()
-            for frame in ascii_frames:
+            for ascii_frame in ascii_frames:
                 while True:
                     if time.time() >= gotime:
                         gotime += ms_per_frame
-                        for row in frame:
+                        for row in ascii_frame:
                             print(row)
-                        for _ in range(len(frame)):
+                        for _ in range(len(ascii_frame)):
                             sys.stdout.write("\x1b[1A")  # cursor up one line
                             sys.stdout.write("\x1b[2K")  # delete the last line
                         break
         else:
-            frame = self.imgToAscii(self.file)
-            for row in frame:
+            ascii_frame = self.imgToAscii(self.file)
+            for row in ascii_frame:
                 print(row)
             input()
-            for _ in range(len(frame) + 1):
+            for _ in range(len(ascii_frame) + 1):
                 sys.stdout.write("\x1b[1A")  # cursor up one line
                 sys.stdout.write("\x1b[2K")  # delete the last line
 
