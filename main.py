@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 import time
 import sys
 
@@ -51,5 +50,6 @@ class Converter:
                 break
 
 
-c = Converter("vid.mp4")
-c.printToTerminal()
+if __name__ == "__main__":
+    c = Converter("vid.mp4")
+    c.printToTerminal()
