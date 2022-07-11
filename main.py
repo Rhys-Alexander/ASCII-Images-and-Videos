@@ -71,10 +71,10 @@ class Converter:
 
     def saveAscii(self):
         # t1 = time.perf_counter()
-        x_increment = round(self.og_w / len(self.ascii_frame[0]))
-        y_increment = round(self.og_h / len(self.ascii_frame))
-        width = x_increment * len(self.ascii_frame[0])
-        height = y_increment * len(self.ascii_frame)
+        self.x_increment = round(self.og_w / len(self.ascii_frame[0]))
+        self.y_increment = round(self.og_h / len(self.ascii_frame))
+        self.n_width = self.x_increment * len(self.ascii_frame[0])
+        self.n_height = self.y_increment * len(self.ascii_frame)
 
         for scale in range(0, 60, 1):
             textSize = cv2.getTextSize(
@@ -84,8 +84,8 @@ class Converter:
                 thickness=1,
             )
             new_width = textSize[0][0]
-            if new_width >= x_increment:
-                font_scale = scale / 20
+            if new_width >= self.x_increment:
+                self.font_scale = scale / 20
                 break
 
         if self.isVid:
@@ -93,23 +93,10 @@ class Converter:
                 "ascii_vid.avi",
                 cv2.VideoWriter_fourcc("M", "J", "P", "G"),
                 self.fps,
-                (width, height),
+                (self.n_width, self.n_height),
             )
             for frame in self.ascii_frames:
-                img = np.zeros((height, width, 3), np.uint8)
-                for i, row in enumerate(frame):
-                    y = (i + 1) * y_increment
-                    for j, char in enumerate(row):
-                        x = j * x_increment
-                        cv2.putText(
-                            img=img,
-                            text=char,
-                            org=(x, y),
-                            fontFace=cv2.FONT_HERSHEY_PLAIN,
-                            fontScale=font_scale,
-                            color=(0, 255, 0),
-                            thickness=1,
-                        )
+                img = self.asciiToImg(frame)
                 out.write(img)
                 # TODO speed up process. use display code for debuggung:
                 # cv2.imshow("ascii", img)
@@ -124,21 +111,25 @@ class Converter:
             # print(t2 - t1)
 
         else:
-            img = np.zeros((height, width, 3), np.uint8)
-            for i, row in enumerate(self.ascii_frame):
-                y = (i + 1) * y_increment
-                for j, char in enumerate(row):
-                    x = j * x_increment
-                    cv2.putText(
-                        img=img,
-                        text=char,
-                        org=(x, y),
-                        fontFace=cv2.FONT_HERSHEY_PLAIN,
-                        fontScale=font_scale,
-                        color=(0, 255, 0),
-                        thickness=1,
-                    )
+            img = self.asciiToImg(self.ascii_frame)
             cv2.imwrite("ascii_pic.png", img)
+
+    def asciiToImg(self, ascii):
+        img = np.zeros((self.n_height, self.n_width, 3), np.uint8)
+        for i, row in enumerate(ascii):
+            y = (i + 1) * self.y_increment
+            for j, char in enumerate(row):
+                x = j * self.x_increment
+                cv2.putText(
+                    img=img,
+                    text=char,
+                    org=(x, y),
+                    fontFace=cv2.FONT_HERSHEY_PLAIN,
+                    fontScale=self.font_scale,
+                    color=(0, 255, 0),
+                    thickness=1,
+                )
+        return img
 
     def displayInTerminal(self):
         if self.isVid:
