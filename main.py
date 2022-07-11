@@ -1,8 +1,9 @@
-import cv2
+import math
 import time
 import sys
-import mimetypes
 import numpy as np
+import cv2
+import mimetypes
 
 
 class Converter:
@@ -46,7 +47,7 @@ class Converter:
 
     def getCharacter(self, pixel):
         intensity = pixel / 255
-        return self.CHARACTERS[round(intensity * len(self.CHARACTERS)) - 1]
+        return self.CHARACTERS[math.floor(intensity * len(self.CHARACTERS))]
 
     def imgToAscii(self, img):
         img = cv2.resize(img, (0, 0), fx=self.aspect, fy=self.aspect)
@@ -145,6 +146,7 @@ class Converter:
 
 
 if __name__ == "__main__":
-    c = Converter("vid.mp4")
+    # c = Converter("vid.mp4")
+    c = Converter("pic.png")
     # c.displayInTerminal()
     c.saveAscii()
