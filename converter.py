@@ -70,6 +70,23 @@ class Converter:
             else:
                 break
 
+    def asciiToImg(self, ascii):
+        img = np.zeros((self.n_height, self.n_width, 3), np.uint8)
+        for i, row in enumerate(ascii):
+            y = (i + 1) * self.y_increment
+            for j, char in enumerate(row):
+                x = j * self.x_increment
+                cv2.putText(
+                    img=img,
+                    text=char,
+                    org=(x, y),
+                    fontFace=self.FONT,
+                    fontScale=self.font_scale,
+                    color=self.COLOR_RGB,
+                    thickness=1,
+                )
+        return img
+
     def saveAscii(self):
         self.x_increment = round(self.og_w / len(self.ascii_frame[0]))
         self.y_increment = round(self.og_h / len(self.ascii_frame))
@@ -102,23 +119,6 @@ class Converter:
             img = self.asciiToImg(self.ascii_frame)
             cv2.imwrite("ascii_pic.png", img)
 
-    def asciiToImg(self, ascii):
-        img = np.zeros((self.n_height, self.n_width, 3), np.uint8)
-        for i, row in enumerate(ascii):
-            y = (i + 1) * self.y_increment
-            for j, char in enumerate(row):
-                x = j * self.x_increment
-                cv2.putText(
-                    img=img,
-                    text=char,
-                    org=(x, y),
-                    fontFace=self.FONT,
-                    fontScale=self.font_scale,
-                    color=self.COLOR_RGB,
-                    thickness=1,
-                )
-        return img
-
     def displayInTerminal(self):
         if self.isVid:
             gotime = time.time()
@@ -143,6 +143,6 @@ class Converter:
 
 if __name__ == "__main__":
     pic = Converter("pic.png")
-    vid = Converter("vid.mp4")
     pic.saveAscii()
-    vid.saveAscii()
+    # vid = Converter("vid.mp4")
+    # vid.saveAscii()
