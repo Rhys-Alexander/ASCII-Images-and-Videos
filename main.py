@@ -11,6 +11,7 @@ class Converter:
     CHARACTERS = (" ", ".", "-", "+", "*", "&", "#", "@")
     MIN_ASPECT_CHARS = 50
     FONT = cv2.FONT_HERSHEY_PLAIN
+    COLOR_RGB = (0, 255, 0)
 
     def __init__(self, filename) -> None:
         type = self.getMediaType(filename)
@@ -70,7 +71,6 @@ class Converter:
                 break
 
     def saveAscii(self):
-        # t1 = time.perf_counter()
         self.x_increment = round(self.og_w / len(self.ascii_frame[0]))
         self.y_increment = round(self.og_h / len(self.ascii_frame))
         self.n_width = self.x_increment * len(self.ascii_frame[0])
@@ -99,9 +99,6 @@ class Converter:
                 out.write(img)
 
             out.release()
-            # for testing
-            # t2 = time.perf_counter()
-            # print(t2 - t1)
         else:
             img = self.asciiToImg(self.ascii_frame)
             cv2.imwrite("ascii_pic.png", img)
@@ -119,7 +116,7 @@ class Converter:
                     org=(x, y),
                     fontFace=self.FONT,
                     fontScale=self.font_scale,
-                    color=(0, 255, 0),
+                    color=self.COLOR_RGB,
                     thickness=1,
                 )
         return img
@@ -134,16 +131,16 @@ class Converter:
                         for row in ascii_frame:
                             print(row)
                         for _ in range(len(ascii_frame)):
-                            sys.stdout.write("\x1b[1A")  # cursor up one line
-                            sys.stdout.write("\x1b[2K")  # delete the last line
+                            sys.stdout.write("\x1b[1A")
+                            sys.stdout.write("\x1b[2K")
                         break
         else:
             for row in self.ascii_frame:
                 print(row)
             input()
             for _ in range(len(self.ascii_frame) + 1):
-                sys.stdout.write("\x1b[1A")  # cursor up one line
-                sys.stdout.write("\x1b[2K")  # delete the last line
+                sys.stdout.write("\x1b[1A")
+                sys.stdout.write("\x1b[2K")
 
 
 if __name__ == "__main__":
