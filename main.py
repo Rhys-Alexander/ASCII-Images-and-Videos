@@ -54,7 +54,6 @@ class Converter:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         cols = []
         for y in range(self.h):
-            # TODO make generator
             row = ""
             for x in range(self.w):
                 row += self.getCharacter(img[y, x]) * 2
@@ -82,7 +81,7 @@ class Converter:
                 self.fps,
                 (width, height),
             )
-
+            # TODO change font size to match vid or pic appropriately
             for frame in self.ascii_frames:
                 img = np.zeros((height, width, 3), np.uint8)
                 for i, row in enumerate(frame):
@@ -99,13 +98,14 @@ class Converter:
                             thickness=1,
                         )
                 out.write(img)
-                # TODO speed up process then remove the display
-                cv2.imshow("ascii", img)
-                if cv2.waitKey(1) & 0xFF == ord("q"):
-                    break
+                # TODO speed up process. use display code for debuggung:
+                # cv2.imshow("ascii", img)
+                # if cv2.waitKey(1) & 0xFF == ord("q"):
+                #     break
 
             out.release()
-            cv2.destroyAllWindows()
+            # if displaying
+            # cv2.destroyAllWindows()
         else:
             img = np.zeros((height, width, 3), np.uint8)
             for i, row in enumerate(self.ascii_frame):
@@ -146,7 +146,7 @@ class Converter:
 
 
 if __name__ == "__main__":
-    # c = Converter("vid.mp4")
-    c = Converter("pic.png")
-    # c.displayInTerminal()
-    c.saveAscii()
+    pic = Converter("pic.png")
+    vid = Converter("vid.mp4")
+    pic.saveAscii()
+    vid.saveAscii()
