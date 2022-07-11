@@ -2,7 +2,6 @@ import math
 import time
 import sys
 import mimetypes
-from xml.dom.pulldom import CHARACTERS
 
 import numpy as np
 import cv2
@@ -71,7 +70,7 @@ class Converter:
                 break
 
     def saveAscii(self):
-        t1 = time.perf_counter()
+        # t1 = time.perf_counter()
         x_increment = round(self.og_w / len(self.ascii_frame[0]))
         y_increment = round(self.og_h / len(self.ascii_frame))
         width = x_increment * len(self.ascii_frame[0])
@@ -79,7 +78,7 @@ class Converter:
 
         for scale in range(0, 60, 1):
             textSize = cv2.getTextSize(
-                text=CHARACTERS[-1],
+                text=self.CHARACTERS[-1],
                 fontFace=cv2.FONT_HERSHEY_PLAIN,
                 fontScale=scale / 20,
                 thickness=1,
