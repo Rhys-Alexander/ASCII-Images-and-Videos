@@ -46,7 +46,7 @@ class Converter:
         return False
 
     def getCharacter(self, pixel):
-        intensity = pixel / 255
+        intensity = pixel / 256
         return self.CHARACTERS[math.floor(intensity * len(self.CHARACTERS))]
 
     def imgToAscii(self, img):
