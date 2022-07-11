@@ -1,9 +1,11 @@
 import math
 import time
 import sys
+import mimetypes
+from xml.dom.pulldom import CHARACTERS
+
 import numpy as np
 import cv2
-import mimetypes
 
 
 class Converter:
@@ -69,10 +71,23 @@ class Converter:
                 break
 
     def saveAscii(self):
+        t1 = time.perf_counter()
         x_increment = round(self.og_w / len(self.ascii_frame[0]))
         y_increment = round(self.og_h / len(self.ascii_frame))
         width = x_increment * len(self.ascii_frame[0])
         height = y_increment * len(self.ascii_frame)
+
+        for scale in range(0, 60, 1):
+            textSize = cv2.getTextSize(
+                text=CHARACTERS[-1],
+                fontFace=cv2.FONT_HERSHEY_PLAIN,
+                fontScale=scale / 20,
+                thickness=1,
+            )
+            new_width = textSize[0][0]
+            if new_width >= x_increment:
+                font_scale = scale / 20
+                break
 
         if self.isVid:
             out = cv2.VideoWriter(
@@ -81,7 +96,6 @@ class Converter:
                 self.fps,
                 (width, height),
             )
-            # TODO change font size to match vid or pic appropriately
             for frame in self.ascii_frames:
                 img = np.zeros((height, width, 3), np.uint8)
                 for i, row in enumerate(frame):
@@ -93,7 +107,7 @@ class Converter:
                             text=char,
                             org=(x, y),
                             fontFace=cv2.FONT_HERSHEY_PLAIN,
-                            fontScale=0.45,
+                            fontScale=font_scale,
                             color=(0, 255, 0),
                             thickness=1,
                         )
@@ -106,6 +120,10 @@ class Converter:
             out.release()
             # if displaying
             # cv2.destroyAllWindows()
+            # for testing
+            # t2 = time.perf_counter()
+            # print(t2 - t1)
+
         else:
             img = np.zeros((height, width, 3), np.uint8)
             for i, row in enumerate(self.ascii_frame):
@@ -117,7 +135,7 @@ class Converter:
                         text=char,
                         org=(x, y),
                         fontFace=cv2.FONT_HERSHEY_PLAIN,
-                        fontScale=0.45,
+                        fontScale=font_scale,
                         color=(0, 255, 0),
                         thickness=1,
                     )
