@@ -115,6 +115,7 @@ class Converter:
             cv2.imwrite("ascii_pic.png", img)
 
     def asciiToImg(self, ascii):
+        # TODO Turn to monospaced PIL placement
         img = np.zeros((self.n_height, self.n_width, 3), np.uint8)
         for i, row in enumerate(ascii):
             y = (i + 1) * self.y_increment
