@@ -10,13 +10,13 @@ import cv2
 class Converter:
     CHARACTERS = (" ", ".", "-", "+", "*", "&", "#", "@")
     MIN_ASPECT_CHARS = 50
+    FONT = cv2.FONT_HERSHEY_PLAIN
 
     def __init__(self, filename) -> None:
         type = self.getMediaType(filename)
         if not type:
             print("Error: Not a valid filetype")
             return
-
         self.isVid = True if type == "video" else False
 
         if self.isVid:
@@ -77,14 +77,13 @@ class Converter:
         self.n_height = self.y_increment * len(self.ascii_frame)
 
         for scale in range(0, 60, 1):
-            textSize = cv2.getTextSize(
+            char_width = cv2.getTextSize(
                 text=self.CHARACTERS[-1],
-                fontFace=cv2.FONT_HERSHEY_PLAIN,
+                fontFace=self.FONT,
                 fontScale=scale / 20,
                 thickness=1,
-            )
-            new_width = textSize[0][0]
-            if new_width >= self.x_increment:
+            )[0][0]
+            if char_width >= self.x_increment:
                 self.font_scale = scale / 20
                 break
 
@@ -98,18 +97,11 @@ class Converter:
             for frame in self.ascii_frames:
                 img = self.asciiToImg(frame)
                 out.write(img)
-                # TODO speed up process. use display code for debuggung:
-                # cv2.imshow("ascii", img)
-                # if cv2.waitKey(1) & 0xFF == ord("q"):
-                #     break
 
             out.release()
-            # if displaying
-            # cv2.destroyAllWindows()
             # for testing
             # t2 = time.perf_counter()
             # print(t2 - t1)
-
         else:
             img = self.asciiToImg(self.ascii_frame)
             cv2.imwrite("ascii_pic.png", img)
@@ -125,7 +117,7 @@ class Converter:
                     img=img,
                     text=char,
                     org=(x, y),
-                    fontFace=cv2.FONT_HERSHEY_PLAIN,
+                    fontFace=self.FONT,
                     fontScale=self.font_scale,
                     color=(0, 255, 0),
                     thickness=1,
