@@ -142,7 +142,8 @@ class Converter:
 
 
 if __name__ == "__main__":
-    pic = Converter("pic.png")
-    pic.saveAscii()
-    # vid = Converter("vid.mp4")
+    # pic = Converter("pic.png")
+    # pic.saveAscii()
+    vid = Converter("vid.mp4")
+    vid.displayInTerminal()
     # vid.saveAscii()
