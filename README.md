@@ -5,6 +5,10 @@ It can also display your images and videos in the terminal in ascii format.
 
 <img src="pic.png" alt="original" width=200px/> <img src="ascii_pic.png" alt="ascii" width=200px/>
 
+
+https://user-images.githubusercontent.com/54585720/195140655-d4c19a84-bf50-42a3-b0a6-db07b737ef71.mov
+
+
 ## Instructions
 
 First initialise a Converter obeject:
